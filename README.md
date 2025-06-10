@@ -1,5 +1,9 @@
 # 🧜🏽‍♀️ Sabratha
 
+[![MIT licensed][https://img.shields.io/badge/license-MIT-blue.svg]][LICENSE]
+[![Build Status][https://github.com/osakared/sabratha/workflows/CI/badge.svg]][https://github.com/osakared/sabratha/actions?query=workflow%3ACI+branch%3Amain]
+![Discourse Topics](https://img.shields.io/discourse/topics?server=https%3A%2F%2Fsupport.tripoli.app)
+
 The rust core of Tripoli, used for datalogging/machine control. Responsible for the data model at the lowest level and ultimately should be usable as embedded code on devices.
 
 ## Basic (planned) Architecture
