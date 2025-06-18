@@ -1,4 +1,4 @@
-pub mod table;
+pub mod store;
 
 #[derive(PartialEq)]
 #[derive(Debug)]
