@@ -4,10 +4,18 @@ version = "0.0.1"
 authors = ["Thomas J. Webb <thomas@osakared.com>"]
 edition = "2024"
 license = "MIT"
+rust-version = "1.87.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+async-graphql = "7.0.16"
+async-graphql-poem = "7.0.17"
+futures-util = "0.3.31"
+poem = "3.1.11"
 rerun = "0.23.3"
 serde = "1.0.219"
 serde_json = "1.0.140"
+slab = "0.4.10"
+tokio = "1.45.1"
+uuid = {version = "1.17.0", features = ["v4"]}

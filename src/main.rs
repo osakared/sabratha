@@ -1,14 +1,26 @@
-use rerun::TimeCell;
+use std::error::Error;
 
-use sabratha::connect;
-use sabratha::store::{Cell, SimpleStore, Store};
+use async_graphql::{http::GraphiQLSource};
+use async_graphql_poem::*;
+use poem::{listener::TcpListener, web::Html, *};
 
-fn main() {
-    let connection = connect();
-    println!("{:#?}", connection);
+use sabratha::schema::Root;
 
-    let mut store = SimpleStore::new();
-    store.add_row("/data", TimeCell::from_duration_nanos(0), vec![Cell::of_float("temp".to_string(), 17.5, "C".to_string(), Some(3))]);
-    let serialized = serde_json::to_string(&store).unwrap();
-    println!("serialized = {}", serialized);
+#[handler]
+async fn graphiql() -> impl IntoResponse {
+    Html(GraphiQLSource::build().finish())
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    // create the schema
+    let app = Root::new();
+
+    // start the http server
+    let app = Route::new().at("/", get(graphiql).post(GraphQL::new(app.schema)));
+    println!("GraphiQL: http://localhost:8000");
+    Server::new(TcpListener::bind("0.0.0.0:8000"))
+        .run(app)
+        .await?;
+    Ok(())
 }

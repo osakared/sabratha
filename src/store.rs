@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::vec::Vec;
 
-use rerun::{Scalar, TimeCell};
-use serde::{Serialize, Deserialize};
+use rerun::TimeCell;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
 pub enum TripoliError {
@@ -40,24 +40,39 @@ impl Cell {
         }
     }
 
-    pub fn of_float(col_name: String, float: f64, unit: Unit, significant_digits: Option<i32>) -> Self {
+    pub fn of_float(
+        col_name: String,
+        float: f64,
+        unit: Unit,
+        significant_digits: Option<i32>,
+    ) -> Self {
         Self {
             col_name,
-            cell_type: CellType::Float(ScalarValue{val: float, unit, significant_digits}),
+            cell_type: CellType::Float(ScalarValue {
+                val: float,
+                unit,
+                significant_digits,
+            }),
         }
     }
 
     pub fn of_int(col_name: String, int: i64, unit: Unit, significant_digits: Option<i32>) -> Self {
         Self {
             col_name,
-            cell_type: CellType::Int(ScalarValue{val: int, unit, significant_digits}),
+            cell_type: CellType::Int(ScalarValue {
+                val: int,
+                unit,
+                significant_digits,
+            }),
         }
     }
 }
 
 pub trait Store {
     fn add_row(&mut self, path: &str, time: TimeCell, data: Vec<Cell>);
-    fn create_in_memory() -> Result<Self, TripoliError> where Self: Sized;
+    fn create_in_memory() -> Result<Self, TripoliError>
+    where
+        Self: Sized;
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -72,27 +87,35 @@ pub struct SimpleStore {
 
 impl SimpleTable {
     fn new() -> Self {
-        Self {
-            rows: vec![]
-        }
+        Self { rows: vec![] }
     }
 }
 
 impl SimpleStore {
     pub fn new() -> Self {
         Self {
-            tables: HashMap::new()
+            tables: HashMap::new(),
         }
     }
 }
 
 impl Store for SimpleStore {
     fn add_row(&mut self, path: &str, time: TimeCell, mut data: Vec<Cell>) {
-        data.push(Cell {col_name: "time".to_string(), cell_type: CellType::Time(time)});
-        self.tables.entry(path.to_string()).or_insert(SimpleTable::new()).rows.push(data);
+        data.push(Cell {
+            col_name: "time".to_string(),
+            cell_type: CellType::Time(time),
+        });
+        self.tables
+            .entry(path.to_string())
+            .or_insert(SimpleTable::new())
+            .rows
+            .push(data);
     }
 
-    fn create_in_memory() -> Result<Self, TripoliError> where Self: Sized {
+    fn create_in_memory() -> Result<Self, TripoliError>
+    where
+        Self: Sized,
+    {
         Ok(Self::new())
     }
 }
@@ -108,8 +131,16 @@ mod tests {
     #[test]
     fn adding_rows_works() {
         let mut store = SimpleStore::new();
-        store.add_row("/data", TimeCell::from_duration_nanos(0), vec![Cell::of_text("success".to_string(), "PASS".to_string())]);
-        store.add_row("/data", TimeCell::from_duration_nanos(0), vec![Cell::of_text("success".to_string(), "FAIL".to_string())]);
+        store.add_row(
+            "/data",
+            TimeCell::from_duration_nanos(0),
+            vec![Cell::of_text("success".to_string(), "PASS".to_string())],
+        );
+        store.add_row(
+            "/data",
+            TimeCell::from_duration_nanos(0),
+            vec![Cell::of_text("success".to_string(), "FAIL".to_string())],
+        );
         assert_eq!(store.tables.get("/data").unwrap().rows.len(), 2);
     }
 }
