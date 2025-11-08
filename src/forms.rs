@@ -1,54 +1,51 @@
-pub enum FormValue {
-    Text(String),
-    Integer(i64),
-    Float(f64),
-    Boolean(bool),
-    Image(Vec<u8>),
-}
+use async_graphql::*;
+use turbosql::{Turbosql, select};
+use uuid::Uuid;
 
-pub struct FormInput {
-    pub id: String,
-    pub label: String,
-    pub help: String,
-    pub input_type: FormInputType,
-}
-
-pub struct SelectValue {
-    pub id: String,
-    pub label: String,
-}
-
-pub type SelectValues = Vec<SelectValue>;
-
+#[derive(serde::Serialize, serde::Deserialize, Enum, Copy, Clone, Eq, PartialEq)]
 pub enum FormInputType {
     Text,
     Number,
     CheckboxBoolean,
-    CheckboxMultiple(SelectValues),
-    Radio(SelectValues),
-    Select(SelectValues),
+    CheckboxMultiple,
+    Radio,
+    Select,
     Signature,
     ImageFile,
 }
 
-pub trait ConnectionModel {
-    fn set_form_value(&mut self, key: &str, value: FormValue);
+#[derive(serde::Serialize, serde::Deserialize, SimpleObject, Clone)]
+pub struct FormInput {
+    pub label: String,
+    pub help: String,
+    pub input_type: FormInputType,
+    // Not using this as part of enum due to limitations of gql
+    pub option_values: Vec<String>,
 }
 
-#[derive(PartialEq, Debug)]
-pub struct Connection {}
-
-pub fn connect() -> Option<Connection> {
-    None
+#[derive(Turbosql, Default, SimpleObject)]
+pub struct Form {
+    pub rowid: Option<i64>,
+    pub id: Option<String>,
+    pub title: Option<String>,
+    pub fields: Option<Vec<FormInput>>,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::connect;
+impl Form {
+    pub fn new() -> Option<Form> {
+        let rowid = Form {
+            id: Some(Uuid::new_v4().to_string()),
+            title: Some(String::new()),
+            fields: Some(vec![]),
+            ..Default::default()
+        }.insert();
+        match rowid {
+            Ok(id) => select!(Form "WHERE rowid = " id).ok(),
+            Err(_) => None
+        }
+    }
 
-    #[test]
-    fn connection_fails() {
-        let connection = connect();
-        assert_eq!(connection, None);
+    pub fn query() -> Vec<Form> {
+        select!(Vec<Form>).unwrap_or(vec![])
     }
 }
