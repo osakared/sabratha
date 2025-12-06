@@ -61,7 +61,7 @@ impl Form {
     }
 
     /// Updates from content of other `Form`
-    pub fn update_from(&mut self, form:&Form) {
+    pub fn update_from(&mut self, form:&Form) -> Result<usize, turbosql::Error> {
         // Is there a more idiomatic/rustic way of doing this?
         // I'm also concerned more lines need to be added for each non-id, non-rowid field
         // ...possible source of errors!
@@ -71,6 +71,6 @@ impl Form {
         if let Some(fields) = &form.fields {
             self.fields = Some(fields.clone());
         }
-        self.update();
+        self.update()
     }
 }

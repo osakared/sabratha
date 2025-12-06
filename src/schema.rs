@@ -3,6 +3,16 @@ use async_graphql::{Context, EmptySubscription, Object, Schema};
 use crate::forms::Form;
 use crate::connection::{Connection, Storage};
 
+trait ConvertsToGQLError {
+    fn to_gql_error(&self) -> async_graphql::Error;
+}
+
+impl ConvertsToGQLError for turbosql::Error {
+    fn to_gql_error(&self) -> async_graphql::Error {
+        async_graphql::Error::new(self.to_string())
+    }
+}
+
 pub struct QueryRoot;
 
 #[Object]
@@ -24,21 +34,22 @@ impl MutationRoot {
     async fn create_form(&self) -> Result<String, async_graphql::Error> {
         match Form::create() {
             Ok(form) => Ok(form.id.unwrap_or(String::new())),
-            Err(err) => Err(async_graphql::Error::new(err.to_string()))
+            Err(err) => Err(err.to_gql_error())
         }
     }
 
-    async fn update_form(&self, form_input:Form) -> String {
+    async fn update_form(&self, form_input:Form) -> Result<String, async_graphql::Error> {
         let form = match &form_input.id {
             Some(id) => Form::find(&id),
             None => Form::create()
         };
         match form {
-            Ok(mut f) => {
-                f.update_from(&form_input);
-                f.id.unwrap_or(String::new())
-            },
-            Err(err) => err.to_string()
+            Ok(mut f) =>
+                match f.update_from(&form_input) {
+                    Ok(_) => Ok(f.id.unwrap_or(String::new())),
+                    Err(err) => Err(err.to_gql_error())
+                },
+            Err(err) => Err(err.to_gql_error())
         }
     }
 }
