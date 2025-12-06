@@ -21,10 +21,24 @@ pub struct MutationRoot;
 
 #[Object]
 impl MutationRoot {
-    async fn create_form(&self, ctx: &Context<'_>) -> String {
-        match Form::new() {
-            Some(form) => form.id.unwrap_or(String::new()),
-            None => "Failed to create form".to_string()
+    async fn create_form(&self) -> Result<String, async_graphql::Error> {
+        match Form::create() {
+            Ok(form) => Ok(form.id.unwrap_or(String::new())),
+            Err(err) => Err(async_graphql::Error::new(err.to_string()))
+        }
+    }
+
+    async fn update_form(&self, form_input:Form) -> String {
+        let form = match &form_input.id {
+            Some(id) => Form::find(&id),
+            None => Form::create()
+        };
+        match form {
+            Ok(mut f) => {
+                f.update_from(&form_input);
+                f.id.unwrap_or(String::new())
+            },
+            Err(err) => err.to_string()
         }
     }
 }

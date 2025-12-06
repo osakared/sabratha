@@ -42,5 +42,5 @@ sql_type = "TEXT"
 
 [[output_generated_tables_do_not_edit.form.columns]]
 name = "fields"
-rust_type = "Option < Vec < FormInput > >"
+rust_type = "Option < Vec < FormField > >"
 sql_type = "TEXT"

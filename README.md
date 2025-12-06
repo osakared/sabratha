@@ -12,5 +12,14 @@ Each instrument connection is its own process, with its own arrow-rs db to store
 
 There is flexibility in this in that any process that adheres to the basic communication protocol could function as an instrument connection, even if it's not a sabratha instance.
 
+## Playing with the GraphQL
 
-
+```bash
+# Create a form
+curl http://localhost:8000/ -X POST --header "Content-Type: application/json" -d '{ "query": "mutation { createForm  }" }'
+# Now the same form should be visible if you query them all
+curl http://localhost:8000/ -X POST --header "Content-Type: application/json" -d '{ "query": "query { forms {id}  }" }'
+# Update fields in a form (replace ID with guid)
+curl http://localhost:8000/ -X POST --header "Content-Type: application/json" -d '{ "query": "mutation($formInput: FormInput!) { updateForm(formInput: $formInput) }" , "variables": {"formInput": {"id": "ID", "title": "Bob"}} }'
+curl http://localhost:8000/ -X POST --header "Content-Type: application/json" -d '{ "query": "mutation($formInput: FormInput!) { updateForm(formInput: $formInput) }" , "variables": {"formInput": {"id": "82c612dd-16d2-427c-9e0e-92af5985ef39", "fields": [{"label": "Customer", "help": "", "inputType": "TEXT", "optionValues": []}]}} }'
+```
