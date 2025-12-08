@@ -33,23 +33,15 @@ pub struct MutationRoot;
 impl MutationRoot {
     async fn create_form(&self) -> Result<String, async_graphql::Error> {
         match Form::create() {
-            Ok(form) => Ok(form.id.unwrap_or(String::new())),
+            Ok(form) => Ok(form.id),
             Err(err) => Err(err.to_gql_error())
         }
     }
 
     async fn update_form(&self, form_input:Form) -> Result<String, async_graphql::Error> {
-        let form = match &form_input.id {
-            Some(id) => Form::find(&id),
-            None => Form::create()
-        };
-        match form {
-            Ok(mut f) =>
-                match f.update_from(&form_input) {
-                    Ok(_) => Ok(f.id.unwrap_or(String::new())),
-                    Err(err) => Err(err.to_gql_error())
-                },
-            Err(err) => Err(err.to_gql_error())
+        match Form::create_or_update(&form_input) {
+            Ok(form) => Ok(form.id),
+            Err(e) => Err(e.to_gql_error()),
         }
     }
 }
