@@ -14,6 +14,39 @@ migrations_append_only = [
     "CREATE TABLE form (rowid INTEGER PRIMARY KEY) STRICT",
     "ALTER TABLE form ADD COLUMN id TEXT NOT NULL DEFAULT ''",
     "ALTER TABLE form ADD COLUMN title TEXT NOT NULL DEFAULT ''",
+    "CREATE TABLE formresponse (rowid INTEGER PRIMARY KEY) STRICT",
+    "ALTER TABLE formresponse ADD COLUMN id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formresponse ADD COLUMN form_id TEXT NOT NULL DEFAULT ''",
+    "CREATE TABLE formfieldresponse (rowid INTEGER PRIMARY KEY) STRICT",
+    "ALTER TABLE formfieldresponse ADD COLUMN id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldresponse ADD COLUMN form_response_id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldresponse ADD COLUMN form_field_id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldresponse ADD COLUMN text_value TEXT",
+    "ALTER TABLE formfieldresponse ADD COLUMN number_value REAL",
+    "ALTER TABLE formfieldresponse ADD COLUMN bool_value INTEGER",
+    "ALTER TABLE formfieldresponse ADD COLUMN selected_options TEXT NOT NULL DEFAULT ''",
+    "CREATE TABLE formfieldresponserow (rowid INTEGER PRIMARY KEY) STRICT",
+    "ALTER TABLE formfieldresponserow ADD COLUMN id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldresponserow ADD COLUMN form_response_id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldresponserow ADD COLUMN form_field_id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldresponserow ADD COLUMN text_value TEXT",
+    "ALTER TABLE formfieldresponserow ADD COLUMN number_value REAL",
+    "ALTER TABLE formfieldresponserow ADD COLUMN bool_value INTEGER",
+    "ALTER TABLE formfieldresponserow ADD COLUMN selected_options TEXT NOT NULL DEFAULT ''",
+    "CREATE TABLE formresponserow (rowid INTEGER PRIMARY KEY) STRICT",
+    "ALTER TABLE formresponserow ADD COLUMN id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formresponserow ADD COLUMN form_id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formresponserow ADD COLUMN field_responses_json TEXT NOT NULL DEFAULT ''",
+    "CREATE TABLE formfieldrow (rowid INTEGER PRIMARY KEY) STRICT",
+    "ALTER TABLE formfieldrow ADD COLUMN id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldrow ADD COLUMN form_id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldrow ADD COLUMN label TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldrow ADD COLUMN help TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldrow ADD COLUMN input_type TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formfieldrow ADD COLUMN option_values TEXT NOT NULL DEFAULT ''",
+    "CREATE TABLE formrow (rowid INTEGER PRIMARY KEY) STRICT",
+    "ALTER TABLE formrow ADD COLUMN id TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE formrow ADD COLUMN title TEXT NOT NULL DEFAULT ''",
 ]
 output_generated_schema_for_your_information_do_not_edit = """
   CREATE TABLE _turbosql_migrations (
@@ -33,6 +66,51 @@ output_generated_schema_for_your_information_do_not_edit = """
     help TEXT NOT NULL DEFAULT '',
     input_type TEXT NOT NULL DEFAULT '',
     option_values TEXT NOT NULL DEFAULT ''
+  ) STRICT
+  CREATE TABLE formfieldresponse (
+    rowid INTEGER PRIMARY KEY,
+    id TEXT NOT NULL DEFAULT '',
+    form_response_id TEXT NOT NULL DEFAULT '',
+    form_field_id TEXT NOT NULL DEFAULT '',
+    text_value TEXT,
+    number_value REAL,
+    bool_value INTEGER,
+    selected_options TEXT NOT NULL DEFAULT ''
+  ) STRICT
+  CREATE TABLE formfieldresponserow (
+    rowid INTEGER PRIMARY KEY,
+    id TEXT NOT NULL DEFAULT '',
+    form_response_id TEXT NOT NULL DEFAULT '',
+    form_field_id TEXT NOT NULL DEFAULT '',
+    text_value TEXT,
+    number_value REAL,
+    bool_value INTEGER,
+    selected_options TEXT NOT NULL DEFAULT ''
+  ) STRICT
+  CREATE TABLE formfieldrow (
+    rowid INTEGER PRIMARY KEY,
+    id TEXT NOT NULL DEFAULT '',
+    form_id TEXT NOT NULL DEFAULT '',
+    label TEXT NOT NULL DEFAULT '',
+    help TEXT NOT NULL DEFAULT '',
+    input_type TEXT NOT NULL DEFAULT '',
+    option_values TEXT NOT NULL DEFAULT ''
+  ) STRICT
+  CREATE TABLE formresponse (
+    rowid INTEGER PRIMARY KEY,
+    id TEXT NOT NULL DEFAULT '',
+    form_id TEXT NOT NULL DEFAULT ''
+  ) STRICT
+  CREATE TABLE formresponserow (
+    rowid INTEGER PRIMARY KEY,
+    id TEXT NOT NULL DEFAULT '',
+    form_id TEXT NOT NULL DEFAULT '',
+    field_responses_json TEXT NOT NULL DEFAULT ''
+  ) STRICT
+  CREATE TABLE formrow (
+    rowid INTEGER PRIMARY KEY,
+    id TEXT NOT NULL DEFAULT '',
+    title TEXT NOT NULL DEFAULT ''
   ) STRICT
 """
 
@@ -90,4 +168,187 @@ sql_type = "TEXT NOT NULL"
 [[output_generated_tables_do_not_edit.formfield.columns]]
 name = "option_values"
 rust_type = "Vec < String >"
+sql_type = "TEXT NOT NULL"
+
+[output_generated_tables_do_not_edit.formfieldresponse]
+name = "formfieldresponse"
+
+[[output_generated_tables_do_not_edit.formfieldresponse.columns]]
+name = "rowid"
+rust_type = "Option < i64 >"
+sql_type = "INTEGER PRIMARY KEY"
+
+[[output_generated_tables_do_not_edit.formfieldresponse.columns]]
+name = "id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldresponse.columns]]
+name = "form_response_id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldresponse.columns]]
+name = "form_field_id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldresponse.columns]]
+name = "text_value"
+rust_type = "Option < String >"
+sql_type = "TEXT"
+
+[[output_generated_tables_do_not_edit.formfieldresponse.columns]]
+name = "number_value"
+rust_type = "Option < f64 >"
+sql_type = "REAL"
+
+[[output_generated_tables_do_not_edit.formfieldresponse.columns]]
+name = "bool_value"
+rust_type = "Option < bool >"
+sql_type = "INTEGER"
+
+[[output_generated_tables_do_not_edit.formfieldresponse.columns]]
+name = "selected_options"
+rust_type = "Vec < String >"
+sql_type = "TEXT NOT NULL"
+
+[output_generated_tables_do_not_edit.formfieldresponserow]
+name = "formfieldresponserow"
+
+[[output_generated_tables_do_not_edit.formfieldresponserow.columns]]
+name = "rowid"
+rust_type = "Option < i64 >"
+sql_type = "INTEGER PRIMARY KEY"
+
+[[output_generated_tables_do_not_edit.formfieldresponserow.columns]]
+name = "id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldresponserow.columns]]
+name = "form_response_id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldresponserow.columns]]
+name = "form_field_id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldresponserow.columns]]
+name = "text_value"
+rust_type = "Option < String >"
+sql_type = "TEXT"
+
+[[output_generated_tables_do_not_edit.formfieldresponserow.columns]]
+name = "number_value"
+rust_type = "Option < f64 >"
+sql_type = "REAL"
+
+[[output_generated_tables_do_not_edit.formfieldresponserow.columns]]
+name = "bool_value"
+rust_type = "Option < bool >"
+sql_type = "INTEGER"
+
+[[output_generated_tables_do_not_edit.formfieldresponserow.columns]]
+name = "selected_options"
+rust_type = "Vec < String >"
+sql_type = "TEXT NOT NULL"
+
+[output_generated_tables_do_not_edit.formfieldrow]
+name = "formfieldrow"
+
+[[output_generated_tables_do_not_edit.formfieldrow.columns]]
+name = "rowid"
+rust_type = "Option < i64 >"
+sql_type = "INTEGER PRIMARY KEY"
+
+[[output_generated_tables_do_not_edit.formfieldrow.columns]]
+name = "id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldrow.columns]]
+name = "form_id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldrow.columns]]
+name = "label"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldrow.columns]]
+name = "help"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldrow.columns]]
+name = "input_type"
+rust_type = "FormFieldType"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formfieldrow.columns]]
+name = "option_values"
+rust_type = "Vec < String >"
+sql_type = "TEXT NOT NULL"
+
+[output_generated_tables_do_not_edit.formresponse]
+name = "formresponse"
+
+[[output_generated_tables_do_not_edit.formresponse.columns]]
+name = "rowid"
+rust_type = "Option < i64 >"
+sql_type = "INTEGER PRIMARY KEY"
+
+[[output_generated_tables_do_not_edit.formresponse.columns]]
+name = "id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formresponse.columns]]
+name = "form_id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[output_generated_tables_do_not_edit.formresponserow]
+name = "formresponserow"
+
+[[output_generated_tables_do_not_edit.formresponserow.columns]]
+name = "rowid"
+rust_type = "Option < i64 >"
+sql_type = "INTEGER PRIMARY KEY"
+
+[[output_generated_tables_do_not_edit.formresponserow.columns]]
+name = "id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formresponserow.columns]]
+name = "form_id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formresponserow.columns]]
+name = "field_responses_json"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[output_generated_tables_do_not_edit.formrow]
+name = "formrow"
+
+[[output_generated_tables_do_not_edit.formrow.columns]]
+name = "rowid"
+rust_type = "Option < i64 >"
+sql_type = "INTEGER PRIMARY KEY"
+
+[[output_generated_tables_do_not_edit.formrow.columns]]
+name = "id"
+rust_type = "String"
+sql_type = "TEXT NOT NULL"
+
+[[output_generated_tables_do_not_edit.formrow.columns]]
+name = "title"
+rust_type = "String"
 sql_type = "TEXT NOT NULL"

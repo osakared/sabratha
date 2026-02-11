@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use futures_util::lock::Mutex;
 use async_graphql::{Enum, Object};
+use futures_util::lock::Mutex;
 use slab::Slab;
 use uuid::Uuid;
 

@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use async_graphql::{http::GraphiQLSource};
+use async_graphql::http::GraphiQLSource;
 use async_graphql_poem::*;
 use poem::{listener::TcpListener, web::Html, *};
 

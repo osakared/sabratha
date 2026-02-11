@@ -1,4 +1,4 @@
-use async_graphql::{value};
+use async_graphql::value;
 
 use sabratha::connection::Connection;
 use sabratha::schema::Root;
@@ -16,5 +16,6 @@ pub async fn schema_check() {
                     "status": "DISCONNECTED"
                 }
             ]
-        }));
+        })
+    );
 }

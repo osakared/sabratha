@@ -1,7 +1,10 @@
 use async_graphql::{Context, EmptySubscription, Object, Schema};
 
-use crate::forms::Form;
 use crate::connection::{Connection, Storage};
+use crate::form_responses::{
+    FormFieldResponseData, FormFieldResponseInput, FormResponse, FormResponseRow,
+};
+use crate::forms::{Form, FormInput, FormRow};
 
 trait ConvertsToGQLError {
     fn to_gql_error(&self) -> async_graphql::Error;
@@ -19,11 +22,22 @@ pub struct QueryRoot;
 impl QueryRoot {
     async fn connections(&self, ctx: &Context<'_>) -> Vec<Connection> {
         let connections = ctx.data_unchecked::<Storage>().lock().await;
-        connections.iter().map(|(_, connection)| connection).cloned().collect()
+        connections
+            .iter()
+            .map(|(_, connection)| connection)
+            .cloned()
+            .collect()
     }
 
     async fn forms(&self) -> Vec<Form> {
-        Form::query()
+        FormRow::query().iter().map(Form::from_row).collect()
+    }
+
+    async fn form_responses(&self) -> Vec<FormResponse> {
+        FormResponseRow::query()
+            .iter()
+            .map(FormResponse::from_row)
+            .collect()
     }
 }
 
@@ -32,17 +46,37 @@ pub struct MutationRoot;
 #[Object]
 impl MutationRoot {
     async fn create_form(&self) -> Result<String, async_graphql::Error> {
-        match Form::create() {
+        match FormRow::create() {
             Ok(form) => Ok(form.id),
-            Err(err) => Err(err.to_gql_error())
+            Err(err) => Err(err.to_gql_error()),
         }
     }
 
-    async fn update_form(&self, form_input:Form) -> Result<String, async_graphql::Error> {
-        match Form::create_or_update(&form_input) {
+    async fn update_form(&self, form_input: FormInput) -> Result<String, async_graphql::Error> {
+        match FormRow::create_or_update(&form_input) {
             Ok(form) => Ok(form.id),
             Err(e) => Err(e.to_gql_error()),
         }
+    }
+
+    async fn create_form_response(&self, form_id: String) -> Result<String, async_graphql::Error> {
+        match FormResponseRow::create(&form_id) {
+            Ok(response) => Ok(response.id),
+            Err(err) => Err(err.to_gql_error()),
+        }
+    }
+
+    async fn update_form_field_response(
+        &self,
+        form_response_id: String,
+        field_response_input: FormFieldResponseInput,
+    ) -> Result<String, async_graphql::Error> {
+        let mut row = FormResponseRow::find(&form_response_id).map_err(|e| e.to_gql_error())?;
+        let data = FormFieldResponseData::from_input(&field_response_input);
+        let result = row
+            .upsert_field_response(data)
+            .map_err(|e| e.to_gql_error())?;
+        Ok(result.id)
     }
 }
 
@@ -57,6 +91,6 @@ impl Root {
         let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
             .data(storage.clone())
             .finish();
-        Self { schema, storage, }
+        Self { schema, storage }
     }
 }
